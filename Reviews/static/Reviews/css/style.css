@@ -1,0 +1,37 @@
+  body{
+    margin: 0;
+}
+  
+.card{
+  width:50%;
+  margin: auto;
+}
+input[type="text"],input[type="password"]{
+  width: 100%;
+}
+button{
+  width: 50%;
+  background-color: green;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 5px;
+} 
+.navbar .navbar-brand {
+  font-family: 'Akronim', cursive;
+  font-size: 5vh;
+}
+.row{
+width:100%;
+padding: 5px;
+font-size: 3vh;
+}
+
+.vl {
+  border-left: 6px solid green;
+  height: 50px;
+  position: absolute;
+  left: 30%;
+  margin-left: -3px;
+  top: 0;
+}

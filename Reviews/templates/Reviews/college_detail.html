@@ -1,0 +1,114 @@
+<html>
+<body >
+{% extends 'Reviews/base.html' %}
+{% block title %}{% endblock %}
+{% block body %}
+<i><h2>{{ college.name }}</h2></i>
+<img src={{ college.pic.url }} height="400" width="1000"/><br>
+<h3>Address: {{ college.address }}</h3>
+<h4>NIRF RATING: {% if college.nirf_rating > 0 %}
+						{{ college.nirf_rating }}
+				{% else %}
+						N/A
+				{% endif %}
+</h4>
+<hr><br>
+<h3>Have a query?Clear them!! </h3>
+<br>
+<form action="{% url 'Reviews:req_query'%}" method="post">
+    {% csrf_token %}
+	<textarea name="qry"></textarea><input type="hidden" name="col" value="{{ college.name }}">
+    <br>
+    <button type="submit">Request</button>
+</form>
+<br>
+
+
+
+<hr>
+<div>
+    {% for dep in deps %}
+       <h3>{{dep }} </h3><br>
+           {% if dep.review_set.count > 0	%}
+                (Total = {{dep.avg_rating | floatformat}} rated)
+                <br>
+                <div  class="col-xs-6 col-lg-4">
+                    (Placement = {{dep.avg_p_rating | floatformat}})
+                
+                    (Academics = {{dep.avg_a_rating | floatformat}})
+                
+                    (Infrastructure = {{dep.avg_i_rating | floatformat}})
+                
+                </div>
+                <div>
+                    <br>{{ dep.review_set.count }} Reviews: <br>
+                    {% for review in dep.review_set.all %}
+                    <div>
+                        <br> Description: <em>{{ review.description }}</em>
+                        <h5>Rated {{review.rating }}/5 by user {{ review.user_name }}</h5>
+                        <h4><a href="{% url 'Reviews:review_detail' review.id%}">
+                        Read more..
+                        </a></h4>
+                    </div>
+    {% endfor %}
+                </div>
+            {% else %}
+                <h4>No Reviews for this department yet</h4>
+            {% endif %}
+    <hr>
+    {% endfor %}
+</div>
+
+<br>
+<hr>
+
+
+
+{%  if college.pendingquery_set.all %}
+<h3>Pending Queries....</h3><br><br>
+{% for qry in college.pendingquery_set.all %}
+<h4> {{ qry.qsn }} </h4>
+{% if college.name|stringformat:"s" == user_clg|stringformat:"s" %}
+<form action="{% url 'Reviews:answer_query'%}" method="post">
+	{% csrf_token %}
+	<input type="hidden" value="{{ qry.qsn }}" name="qstn">
+	<input type="hidden" value="{{ college.name }}" name="colg">
+	<button type="submit">Answer</button>
+</form>
+{% endif %}
+		<br>
+{% endfor %}
+{% else %}
+<h4>No Pending Queries for this college yet</h4>
+{% endif %}
+
+<br><br>
+<hr>
+{%  if college.answeredqueries_set.all %}
+<h3>Answered Queries....</h3><br><br>
+{% for qry in college.answeredqueries_set.all %}
+<h4> {{ qry.qsn }} </h4>
+<h4> {{ qry.ans }} </h4>
+		<br>
+{% endfor %}
+{% else %}
+<h4>No Answered Queries for this college yet</h4>
+{% endif %}
+
+<br>
+<hr>
+{% if college.name|stringformat:"s" == user_clg|stringformat:"s" %}
+<h2>Add your review about this college <h2>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'Reviews:add_review' college.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Add" />
+</form>
+	{% endif %}
+
+{% endblock %}
+
+</body>
+</html>
